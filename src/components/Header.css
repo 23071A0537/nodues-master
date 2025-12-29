@@ -1,0 +1,215 @@
+/* ---------- Base Header Styling ---------- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+padding: 18px 36px;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12);
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #4f46e5;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(8px);
+}
+
+/* ---------- Left Section ---------- */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex: 1;
+  min-width: 0;
+}
+
+.header-logo {
+  width: 70px;
+  height: 70px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header-logo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 30px rgba(99, 102, 241, 0.25);
+}
+
+/* ---------- Text Section ---------- */
+.header-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.header-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+  color: #3730a3;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px rgba(79, 70, 229, 0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-address {
+  font-size: 0.95rem;
+  color: #6b7cff;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Right Section ---------- */
+.header-info {
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6366f1;
+  flex-shrink: 0;
+  position: relative;
+  padding: 6px;
+
+  transition: all 0.3s ease;
+}
+
+.header-info:hover {
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.profile-icon {
+  color: #6366f1;
+  transition: color 0.3s ease;
+}
+
+.header-info:hover .profile-icon {
+  color: #4f46e5;
+}
+
+
+/* ---------- Right Section ---------- */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Logout button */
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 12px;
+
+  border: none;
+  background-color: #dc2626;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+}
+
+.btn-logout:hover {
+  background-color: #b91c1c;
+  box-shadow: 0 6px 20px rgba(185, 28, 28, 0.45);
+  transform: translateY(-2px);
+}
+
+/* Ensure header info + logout are responsive */
+@media (max-width: 860px) {
+  .header-right {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  .btn-logout {
+    padding: 5px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-logout {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+  }
+}
+
+
+/* ---------- Tooltip for Email ---------- */
+.header-info[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -36px;
+  right: 0;
+  background: #4f46e5;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+  opacity: 0;
+  transform: translateY(-6px);
+  animation: fadeInTooltip 0.3s forwards;
+}
+
+@keyframes fadeInTooltip {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Hover Glow Effect ---------- */
+.header:hover {
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.18);
+}
+
+/* ---------- Responsive Design ---------- */
+@media (max-width: 860px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    padding: 16px 20px;
+    gap: 12px;
+  }
+
+  .header-left {
+    gap: 14px;
+  }
+
+  .header-logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .header-title {
+    font-size: 1.3rem;
+  }
+
+  .header-address {
+    font-size: 0.85rem;
+  }
+
+  .header-info[title]:hover::after {
+    bottom: -42px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-title {
+    font-size: 1.15rem;
+  }
+  .header-logo {
+    width: 52px;
+    height: 52px;
+  }
+}

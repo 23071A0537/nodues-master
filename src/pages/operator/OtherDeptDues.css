@@ -1,0 +1,172 @@
+.all-dues-container {
+  padding: 24px;
+  background: #f8fafc;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  font-family: var(--font-family);
+}
+
+.all-dues-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e3a8a;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* 🌈 Filters Row */
+.all-dues-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.all-dues-search {
+  flex: 1;
+  min-width: 220px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+}
+
+.all-dues-date-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #e0f2fe;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1e40af;
+}
+
+.all-dues-date-filters input {
+  border: 1px solid #93c5fd;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* 💰 Summary */
+.all-dues-summary {
+  background: #f1f5f9;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
+  text-align: center;
+  color: #334155;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.all-dues-summary p {
+  margin: 4px 0;
+}
+
+/* 📋 Table */
+.all-dues-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.all-dues-table th {
+  background: #1e3a8a;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+}
+
+.all-dues-table td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.all-dues-row-pending {
+  background-color: white;
+  transition: background-color 0.2s;
+}
+
+.all-dues-row-pending:hover {
+  background-color: #f9fafb;
+}
+
+.all-dues-paid {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.all-dues-due {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.all-dues-pay-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.all-dues-pay-btn:hover {
+  background-color: #43a047;
+}
+
+.all-dues-paid-text {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+/* 🪟 Modal */
+.dues-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.dues-modal-content {
+  background: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.dues-modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 15px;
+}
+
+.dues-modal-confirm-btn {
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.dues-modal-cancel-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+}

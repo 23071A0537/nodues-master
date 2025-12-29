@@ -1,0 +1,61 @@
+/* Import Google Fonts for a nicer look (Optional) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* Override Bootstrap primary color to match your theme */
+:root {
+  --bs-primary: #4f46e5;
+  --bs-primary-rgb: 79, 70, 229;
+  --bs-body-font-family: 'Poppins', sans-serif;
+  --bs-body-bg: #f3f4f6; /* Light gray background */
+}
+
+.academic-years-page .card {
+  border: none;
+  border-radius: 14px;
+}
+
+.academic-years-page h1 {
+  color: var(--bs-primary);
+  font-weight: 700;
+}
+
+.list-group-item {
+  padding: 1rem 1.25rem;
+  border-color: #e5e7eb;
+}
+
+/* Style for form controls on focus */
+.form-control:focus {
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+/* Primary button styling */
+.btn-primary {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #4338ca; /* A slightly darker shade for hover */
+  border-color: #4338ca;
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  background-color: #a5b4fc;
+  border-color: #a5b4fc;
+}
+
+/* Delete button styling */
+.btn-outline-danger {
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-danger:hover {
+  transform: translateY(-2px);
+}

@@ -1,0 +1,51 @@
+.layout-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.layout-main {
+  flex: 1;
+  padding: 32px;
+  background: #f1f5fa;
+  min-height: calc(100vh - 200px);
+}
+
+.footer {
+  background: #dbeafe;
+  color: #222;
+  font-size: 0.95em;
+  padding: 12px 0;
+  text-align: center;
+}
+
+.layout-container {
+  display: flex;
+  min-height: calc(100vh - 140px); /* Account for header and footer */
+  overflow: hidden;
+  width: 100%;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #2e3a59;
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  width: 100%;
+}
+
+/* Header styling */
+
+main {
+  flex: 1;
+  padding: 24px;
+  background-color: #f3f4f6;
+  overflow-y: auto;
+}

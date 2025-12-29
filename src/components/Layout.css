@@ -1,0 +1,45 @@
+.layout-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.layout-main {
+  flex: 1;
+  padding: 32px;
+  background: #f1f5fa;
+  min-height: calc(100vh - 200px); /* Ensure minimum height */
+}
+
+.footer {
+  background: #dbeafe;
+  color: #222;
+  font-size: 0.95em;
+  padding: 12px 0;
+  text-align: center;
+}
+
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  width: 100%;
+}
+
+/* Header styling */
+
+main {
+  flex: 1;
+  padding: 24px;
+  background-color: #f3f4f6;
+  overflow-y: auto;
+}
