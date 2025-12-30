@@ -8,7 +8,12 @@ const xlsx = require('xlsx');
 // ➕ Add dues for a student or faculty
 exports.addDue = async (req, res) => {
   try {
-    const { personId, personType, department, description, amount, dueDate, category, link } = req.body;
+    const { personId, personType, department, description, amount, dueDate, category, link, dueType } = req.body;
+
+    // Validate dueType
+    if (!dueType) {
+      return res.status(400).json({ message: "Due type is required" });
+    }
 
     // Check if person exists by rollNumber or facultyId
     let personExists;
@@ -25,17 +30,18 @@ exports.addDue = async (req, res) => {
     }
 
     const newDue = new Dues({
-      personId,                  // rollNumber or facultyId
-      personName: personExists.name, // 👈 Add the person's name
+      personId,
+      personName: personExists.name,
       personType,
-      department,                // department name as string
+      department,
       description,
       amount,
       dueDate,
       clearDate: null,
       status: "pending",
-      category: category || 'payable', // default to payable
-      link: link || '' // optional
+      category: category || 'payable',
+      link: link || '',
+      dueType
     });
 
     await newDue.save();
@@ -58,8 +64,7 @@ exports.addDueBulk = async (req, res) => {
       return res.status(400).json({ message: "No dues data provided" });
     }
 
-    // Validate required fields for the first row to provide early feedback
-    const requiredFields = ['personId', 'personType', 'department', 'description', 'amount', 'dueDate'];
+    const requiredFields = ['personId', 'personType', 'department', 'description', 'amount', 'dueDate', 'dueType'];
     const firstDue = dues[0];
     const missingFields = requiredFields.filter(field => !(field in firstDue));
     
@@ -75,21 +80,19 @@ exports.addDueBulk = async (req, res) => {
 
     for (let i = 0; i < dues.length; i++) {
       const due = dues[i];
-      const rowNum = i + 2; // Excel row number (header + 1)
+      const rowNum = i + 2;
       
-      const { personId, personType, department, description, amount, dueDate, category, link } = due;
+      const { personId, personType, department, description, amount, dueDate, category, link, dueType } = due;
 
-      // Validate required fields for each row
-      if (!personId || !personType || !description || !dueDate) {
+      if (!personId || !personType || !description || !dueDate || !dueType) {
         failedEntries.push({ 
           row: rowNum, 
           personId, 
-          reason: "Missing required fields (personId, personType, description, or dueDate)" 
+          reason: "Missing required fields (personId, personType, description, dueDate, or dueType)" 
         });
         continue;
       }
 
-      // Validate personType
       if (personType !== "Student" && personType !== "Faculty") {
         failedEntries.push({ 
           row: rowNum, 
@@ -99,12 +102,25 @@ exports.addDueBulk = async (req, res) => {
         continue;
       }
 
-      // Validate category if provided
       if (category && category !== "payable" && category !== "non-payable") {
         failedEntries.push({ 
           row: rowNum, 
           personId, 
           reason: "Invalid category. Must be 'payable' or 'non-payable'" 
+        });
+        continue;
+      }
+
+      const validDueTypes = [
+        'damage-to-property', 'fee-delay', 'scholarship-issue', 
+        'library-fine', 'hostel-dues', 'lab-equipment', 
+        'sports-equipment', 'exam-malpractice', 'other'
+      ];
+      if (!validDueTypes.includes(dueType)) {
+        failedEntries.push({ 
+          row: rowNum, 
+          personId, 
+          reason: `Invalid dueType. Must be one of: ${validDueTypes.join(', ')}` 
         });
         continue;
       }
@@ -126,16 +142,13 @@ exports.addDueBulk = async (req, res) => {
           continue;
         }
 
-        // Parse date - handle both Excel serial and string dates
         let parsedDate;
         if (typeof dueDate === "number") {
-          // Excel serial date
           const utc_days = Math.floor(dueDate - 25569);
           const utc_value = utc_days * 86400;
           const date_info = new Date(utc_value * 1000);
           parsedDate = new Date(Date.UTC(date_info.getFullYear(), date_info.getMonth(), date_info.getDate()));
         } else {
-          // String date
           parsedDate = new Date(dueDate);
           if (isNaN(parsedDate.getTime())) {
             failedEntries.push({ 
@@ -159,7 +172,8 @@ exports.addDueBulk = async (req, res) => {
           status: "pending",
           paymentStatus: "due",
           category: category || 'payable',
-          link: link || ''
+          link: link || '',
+          dueType
         });
       } catch (innerErr) {
         failedEntries.push({ 
@@ -170,7 +184,6 @@ exports.addDueBulk = async (req, res) => {
       }
     }
 
-    // Insert only valid dues
     let insertedDues = [];
     if (duesToInsert.length > 0) {
       insertedDues = await Dues.insertMany(duesToInsert);
@@ -183,7 +196,6 @@ exports.addDueBulk = async (req, res) => {
       success: insertedDues.length > 0
     };
 
-    // Include failed entries only if there are any
     if (failedEntries.length > 0) {
       response.failedEntries = failedEntries;
     }
@@ -575,7 +587,8 @@ exports.downloadDuesSample = async (req, res) => {
         'amount': 500,
         'dueDate': '2025-12-31',
         'category': 'payable',
-        'link': 'https://drive.google.com/...'
+        'link': 'https://drive.google.com/...',
+        'dueType': 'library-fine'
       },
       {
         'personId': 'EMP001',
@@ -586,7 +599,8 @@ exports.downloadDuesSample = async (req, res) => {
         'amount': 0,
         'dueDate': '2025-11-30',
         'category': 'non-payable',
-        'link': ''
+        'link': '',
+        'dueType': 'lab-equipment'
       }
     ];
 
@@ -602,7 +616,8 @@ exports.downloadDuesSample = async (req, res) => {
       { wch: 10 }, // amount
       { wch: 12 }, // dueDate
       { wch: 12 }, // category
-      { wch: 40 }  // link
+      { wch: 40 }, // link
+      { wch: 20 }  // dueType
     ];
 
     xlsx.utils.book_append_sheet(workbook, worksheet, 'Dues');

@@ -32,6 +32,7 @@ const AddDue: React.FC = () => {
     "payable"
   );
   const [link, setLink] = useState("");
+  const [dueType, setDueType] = useState("");
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
   const [showAddForm, setShowAddForm] = useState(false);
@@ -96,6 +97,7 @@ const AddDue: React.FC = () => {
         dueDate,
         category,
         link,
+        dueType,
       });
 
       setSuccess(res.data.message || "Due added successfully ✅");
@@ -371,6 +373,41 @@ const AddDue: React.FC = () => {
                       <option value="non-payable">
                         Non-Payable (No money required)
                       </option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Due Type - NEW FIELD */}
+                <div className="form-row">
+                  <div className="form-col">
+                    <label className="form-label">
+                      Due Type <span style={{ color: "#dc2626" }}>*</span>
+                    </label>
+                    <select
+                      className="form-select"
+                      value={dueType}
+                      onChange={(e) => setDueType(e.target.value)}
+                      required
+                      style={{
+                        color: dueType === "" ? "#9ca3af" : "#1f2937",
+                      }}
+                    >
+                      <option value="" disabled>
+                        -- Select Due Type --
+                      </option>
+                      <option value="damage-to-property">
+                        Damage to College Property
+                      </option>
+                      <option value="fee-delay">Fee Delay</option>
+                      <option value="scholarship-issue">
+                        Scholarship Issue
+                      </option>
+                      <option value="library-fine">Library Fine</option>
+                      <option value="hostel-dues">Hostel Dues</option>
+                      <option value="lab-equipment">Lab Equipment</option>
+                      <option value="sports-equipment">Sports Equipment</option>
+                      <option value="exam-malpractice">Exam Malpractice</option>
+                      <option value="other">Other</option>
                     </select>
                   </div>
                 </div>

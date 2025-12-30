@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../api";
 import "../operator/OperatorDashboard.css";
 
@@ -12,6 +12,7 @@ interface Due {
   status: string;
   dueDate: string;
   department: string;
+  dueType?: string;
 }
 
 interface StudentDetails {
@@ -402,6 +403,28 @@ const StudentDetails: React.FC = () => {
                               >
                                 ₹{due.amount}
                               </span>
+                              {due.dueType && (
+                                <span
+                                  style={{
+                                    marginLeft: "8px",
+                                    padding: "2px 8px",
+                                    borderRadius: "8px",
+                                    fontSize: "11px",
+                                    backgroundColor: "#f3f4f6",
+                                    color: "#6b7280",
+                                    fontWeight: "500",
+                                  }}
+                                >
+                                  {due.dueType
+                                    .split("-")
+                                    .map(
+                                      (word) =>
+                                        word.charAt(0).toUpperCase() +
+                                        word.slice(1)
+                                    )
+                                    .join(" ")}
+                                </span>
+                              )}
                             </div>
                             <div
                               style={{

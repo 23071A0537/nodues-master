@@ -109,6 +109,7 @@ export default tseslint.config([
   - description (Due description)
   - amount (Numeric value, 0 for non-payable)
   - dueDate (Format: YYYY-MM-DD, e.g., 2025-12-31)
+  - dueType (Must be one of: damage-to-property, fee-delay, scholarship-issue, library-fine, hostel-dues, lab-equipment, sports-equipment, exam-malpractice, other)
 - **Optional Columns**:
   - category (Either "payable" or "non-payable", defaults to "payable")
   - link (Google Drive link or other URL)

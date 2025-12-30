@@ -15,6 +15,7 @@ interface Due {
   status: string;
   paymentStatus: string;
   dateAdded: string;
+  dueType?: string;
 }
 
 const AllDepartmentDues: React.FC = () => {
@@ -158,6 +159,7 @@ const AllDepartmentDues: React.FC = () => {
               <th>Person ID</th>
               <th>Department</th>
               <th>Description</th>
+              <th>Due Type</th>
               <th>Amount</th>
               <th>Payment</th>
               <th>Added</th>
@@ -169,7 +171,7 @@ const AllDepartmentDues: React.FC = () => {
             {filteredDues.length === 0 ? (
               <tr>
                 <td
-                  colSpan={userDepartment === "ACCOUNTS" ? 9 : 8}
+                  colSpan={userDepartment === "ACCOUNTS" ? 10 : 9}
                   className="all-dues-no-data"
                 >
                   No pending dues found
@@ -182,6 +184,28 @@ const AllDepartmentDues: React.FC = () => {
                   <td>{d.personId}</td>
                   <td>{d.department}</td>
                   <td>{d.description}</td>
+                  <td>
+                    <span
+                      style={{
+                        padding: "4px 8px",
+                        borderRadius: "12px",
+                        fontSize: "11px",
+                        fontWeight: "500",
+                        backgroundColor: "#f3f4f6",
+                        color: "#374151",
+                      }}
+                    >
+                      {d.dueType
+                        ? d.dueType
+                            .split("-")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                            )
+                            .join(" ")
+                        : "N/A"}
+                    </span>
+                  </td>
                   <td>₹{d.amount}</td>
                   <td
                     className={

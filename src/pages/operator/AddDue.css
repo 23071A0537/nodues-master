@@ -39,6 +39,14 @@
   margin-bottom: 6px;
 }
 
+.add-due-form .form-select option[value=""] {
+  color: #9ca3af;
+}
+
+.add-due-form .form-select:invalid {
+  color: #9ca3af;
+}
+
 .add-due-form .form-control,
 .add-due-form .form-select {
   border-radius: 10px;

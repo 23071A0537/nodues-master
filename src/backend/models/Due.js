@@ -22,7 +22,24 @@ const dueSchema = new mongoose.Schema({
 
   // New fields
   category: { type: String, enum: ['payable', 'non-payable'], default: 'payable' }, // whether student has to pay money
-  link: { type: String, default: '' } // Google Drive link, optional
+  link: { type: String, default: '' }, // Google Drive link, optional
+  
+  // 🔹 New field for due type/reason
+  dueType: { 
+    type: String, 
+    required: true,
+    enum: [
+      'damage-to-property',
+      'fee-delay',
+      'scholarship-issue',
+      'library-fine',
+      'hostel-dues',
+      'lab-equipment',
+      'sports-equipment',
+      'exam-malpractice',
+      'other'
+    ]
+  }
 });
 
 module.exports = mongoose.model('Due', dueSchema);

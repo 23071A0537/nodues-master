@@ -15,6 +15,8 @@ interface Due {
   status: string;
   dateAdded: string;
   paymentStatus: "due" | "done";
+  category?: string;
+  dueType?: string;
 }
 
 const ClearDue: React.FC = () => {
@@ -233,6 +235,7 @@ const ClearDue: React.FC = () => {
                 <th>Person ID</th>
                 <th>Description</th>
                 <th>Category</th>
+                <th>Due Type</th>
                 <th>Amount</th>
                 <th>Added Date</th>
                 <th>Due Date</th>
@@ -245,7 +248,7 @@ const ClearDue: React.FC = () => {
             <tbody>
               {filteredDues.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="clear-due-no-data">
+                  <td colSpan={12} className="clear-due-no-data">
                     No dues found
                   </td>
                 </tr>
@@ -274,6 +277,28 @@ const ClearDue: React.FC = () => {
                         }}
                       >
                         {d.category === "payable" ? "Payable" : "Non-Payable"}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        style={{
+                          padding: "4px 8px",
+                          borderRadius: "12px",
+                          fontSize: "11px",
+                          fontWeight: "500",
+                          backgroundColor: "#f3f4f6",
+                          color: "#374151",
+                        }}
+                      >
+                        {d.dueType
+                          ? d.dueType
+                              .split("-")
+                              .map(
+                                (word) =>
+                                  word.charAt(0).toUpperCase() + word.slice(1)
+                              )
+                              .join(" ")
+                          : "N/A"}
                       </span>
                     </td>
                     <td>₹{d.amount}</td>

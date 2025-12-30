@@ -9,6 +9,7 @@ interface Due {
   amount: number;
   dueDate: string;
   status: string;
+  dueType?: string;
 }
 
 interface DepartmentDues {
@@ -102,6 +103,27 @@ const StudentDuesLookup: React.FC = () => {
                           {dept.dues.map((due) => (
                             <li key={due._id}>
                               {due.description} - ₹{due.amount}
+                              {due.dueType && (
+                                <span
+                                  style={{
+                                    marginLeft: "8px",
+                                    padding: "2px 6px",
+                                    borderRadius: "6px",
+                                    fontSize: "10px",
+                                    backgroundColor: "#f3f4f6",
+                                    color: "#6b7280",
+                                  }}
+                                >
+                                  {due.dueType
+                                    .split("-")
+                                    .map(
+                                      (word) =>
+                                        word.charAt(0).toUpperCase() +
+                                        word.slice(1)
+                                    )
+                                    .join(" ")}
+                                </span>
+                              )}
                               <br />
                               <small>
                                 Due Date:{" "}
