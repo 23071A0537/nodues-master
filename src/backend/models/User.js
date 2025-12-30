@@ -15,13 +15,13 @@ const userSchema = new mongoose.Schema({
   // Primary role (for backwards compatibility)
   role: {
     type: String,
-    enum: ['super_admin', 'admin', 'department_operator', 'hod', 'faculty'],
+    enum: ['super_admin', 'admin', 'department_operator', 'hod', 'faculty', 'hr'],
     required: true
   },
   // Multiple roles support (composite roles)
   roles: [{
     type: String,
-    enum: ['super_admin', 'admin', 'department_operator', 'hod', 'faculty']
+    enum: ['super_admin', 'admin', 'department_operator', 'hod', 'faculty', 'hr']
   }],
   // Department for operator role (required if has department_operator role)
   department: { 

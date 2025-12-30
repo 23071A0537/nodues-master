@@ -32,6 +32,13 @@ const AllDepartmentDues: React.FC = () => {
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem("user") || "{}");
     setUserDepartment(user.department || "");
+
+    // HR operators cannot access this page
+    if (user.department === "HR") {
+      setError("HR operators can only manage faculty dues. Access denied ❌");
+      return;
+    }
+
     fetchAllDues();
   }, []);
 

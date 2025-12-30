@@ -1,0 +1,55 @@
+.hr-faculty-dashboard {
+  padding: 20px;
+}
+
+.hr-faculty-dashboard-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #1f2937;
+}
+
+.hr-faculty-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.hr-faculty-stat-card {
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hr-faculty-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.hr-faculty-stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.hr-faculty-stat-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.hr-faculty-info-box {
+  padding: 16px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  color: #0c4a6e;
+  margin-bottom: 24px;
+}
+
+.hr-faculty-info-box p {
+  margin: 0;
+  font-weight: 500;
+}

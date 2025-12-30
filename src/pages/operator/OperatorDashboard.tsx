@@ -60,27 +60,99 @@ const OperatorDashboard: React.FC = () => {
     fetchStats();
   }, []);
 
-  // ✅ show external dept dues only for accounts or academic operator
+  // ✅ show external dept dues only for accounts and academic operators
   const canViewExternalDues =
     operatorDept === "ACCOUNTS" || operatorDept === "ACADEMICS";
 
-  // Check if accounts operator
+  // Check if accounts or HR operator
   const isAccountsOperator = operatorDept === "ACCOUNTS";
+  const isHROperator = operatorDept === "HR";
   const canViewAllDues =
-    operatorDept === "ACCOUNTS" || operatorDept === "ACADEMICS";
+    operatorDept === "ACCOUNTS" ||
+    operatorDept === "ACADEMICS" ||
+    operatorDept === "HR";
 
   return (
-    // Removed the outer div with className "operator-layout-container"
-    // Removed the <OperatorSidebar /> component
-    // Kept only the main content div
     <div className="operator-main-content">
       <header className="operator-dashboard-header">
         <h1>
           👋 Welcome, {operatorName}{" "}
           <span className="operator-dept">({operatorDept} Operator)</span>
         </h1>
-        <p>Manage your department dues efficiently and track stats.</p>
+        <p>
+          {operatorDept === "HR"
+            ? "Manage faculty dues efficiently."
+            : "Manage your department dues efficiently and track stats."}
+        </p>
       </header>
+
+      {/* Special buttons for HR operator */}
+      {isHROperator && (
+        <div
+          style={{
+            marginBottom: "30px",
+            display: "flex",
+            gap: "16px",
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <button
+            onClick={() => navigate("/operator/add-due")}
+            style={{
+              padding: "12px 24px",
+              backgroundColor: "#7c3aed",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "600",
+              transition: "all 0.2s",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#6d28d9";
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 6px 8px rgba(0,0,0,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "#7c3aed";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
+            }}
+          >
+            ➕ Add Faculty Due
+          </button>
+          <button
+            onClick={() => navigate("/operator/hr-faculty-dues")}
+            style={{
+              padding: "12px 24px",
+              backgroundColor: "#7c3aed",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "600",
+              transition: "all 0.2s",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#6d28d9";
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 6px 8px rgba(0,0,0,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "#7c3aed";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
+            }}
+          >
+            📋 View Faculty Dues
+          </button>
+        </div>
+      )}
 
       {/* Special buttons for accounts operator */}
       {isAccountsOperator && (
@@ -128,7 +200,11 @@ const OperatorDashboard: React.FC = () => {
           <FaUserGraduate className="stat-icon" />
           <div>
             <p className="stat-number">{stats.totalStudents}</p>
-            <p className="stat-label">Students across Institute</p>
+            <p className="stat-label">
+              {operatorDept === "HR"
+                ? "👨‍🏫 Total Faculty"
+                : "👨‍🎓 Students across Institute"}
+            </p>
           </div>
         </div>
 
@@ -136,11 +212,13 @@ const OperatorDashboard: React.FC = () => {
           <FaCoins className="stat-icon" />
           <div>
             <p className="stat-number">{stats.deptDues}</p>
-            <p className="stat-label">Dept. Dues</p>
+            <p className="stat-label">
+              {operatorDept === "HR" ? "👨‍💼 Faculty Dues" : "📋 Dept. Dues"}
+            </p>
           </div>
         </div>
 
-        {/* ✅ Conditionally render this only for accounts/academic operator */}
+        {/* Only show for ACCOUNTS and ACADEMICS, NOT HR */}
         {canViewExternalDues && (
           <div className="stat-card external-dues">
             <FaFileInvoiceDollar className="stat-icon" />
@@ -160,7 +238,7 @@ const OperatorDashboard: React.FC = () => {
         </div>
       </section>
 
-      {/* NEW: Department Dues Breakdown Table - Only show if breakdown exists */}
+      {/* Dues Breakdown */}
       {stats.breakdown && (
         <section style={{ marginTop: "40px" }}>
           <h2
@@ -172,7 +250,10 @@ const OperatorDashboard: React.FC = () => {
               textAlign: "center",
             }}
           >
-            📊 {operatorDept} Department - Dues Breakdown
+            📊{" "}
+            {operatorDept === "HR"
+              ? "Faculty Dues Breakdown"
+              : `${operatorDept} Department - Dues Breakdown`}
           </h2>
 
           <div

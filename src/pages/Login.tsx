@@ -39,6 +39,8 @@ const Login = () => {
         navigate("/operator");
       } else if (user.role === "hod") {
         navigate("/hod");
+      } else if (user.role === "hr") {
+        navigate("/hr");
       } else {
         navigate("/student-lookup");
       }

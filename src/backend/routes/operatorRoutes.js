@@ -145,4 +145,147 @@ router.get(
   downloadDuesSample
 );
 
+// 🔹 Get all faculty with due status (accounts operator only)
+router.get(
+  "/all-faculty",
+  protect,
+  authorizeRoles("department_operator"),
+  authorizeDepartments("ACCOUNTS"),
+  async (req, res) => {
+    try {
+      const dues = await require("../models/Due").find({ personType: "Faculty" });
+      const facultyList = await Faculty.find().sort({ name: 1 });
+      
+      const facultyWithDues = facultyList.map(f => ({
+        ...f.toObject(),
+        totalDues: dues.filter(d => d.personId === f.facultyId).length,
+        totalAmount: dues
+          .filter(d => d.personId === f.facultyId && d.status === "pending")
+          .reduce((sum, d) => sum + d.amount, 0),
+        paymentDue: dues.filter(d => d.personId === f.facultyId && d.paymentStatus === "due").length > 0
+      }));
+
+      res.json(facultyWithDues);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch faculty", error: err.message });
+    }
+  }
+);
+
+// 🔹 Get all dues for a specific faculty (accounts operator only)
+router.get(
+  "/all-faculty/:facultyId/dues",
+  protect,
+  authorizeRoles("department_operator"),
+  authorizeDepartments("ACCOUNTS"),
+  async (req, res) => {
+    try {
+      const { facultyId } = req.params;
+      const dues = await require("../models/Due").find({
+        personId: facultyId,
+        personType: "Faculty"
+      }).sort({ dateAdded: -1 });
+      res.json(dues);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch faculty dues", error: err.message });
+    }
+  }
+);
+
+// 🔹 HR: Get all faculty with due status
+router.get(
+  "/hr/faculty-dues",
+  protect,
+  authorizeRoles("department_operator"),
+  authorizeDepartments("HR"),
+  async (req, res) => {
+    try {
+      const dues = await require("../models/Due").find({ 
+        personType: "Faculty",
+        status: "pending"
+      }).sort({ dateAdded: -1 });
+      res.json(dues);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch faculty dues", error: err.message });
+    }
+  }
+);
+
+// 🔹 HR: Get faculty stats
+router.get(
+  "/hr/faculty-stats",
+  protect,
+  authorizeRoles("department_operator"),
+  authorizeDepartments("HR"),
+  async (req, res) => {
+    try {
+      const Faculty = require("../models/Faculty");
+      const Due = require("../models/Due");
+
+      const totalFaculty = await Faculty.countDocuments();
+      const facultyWithDues = await Due.distinct("personId", {
+        personType: "Faculty",
+        status: "pending"
+      });
+      const totalDuesAmount = await Due.aggregate([
+        {
+          $match: {
+            personType: "Faculty",
+            status: "pending"
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: "$amount" }
+          }
+        }
+      ]);
+
+      res.json({
+        totalFaculty,
+        facultyWithDues: facultyWithDues.length,
+        totalDuesAmount: totalDuesAmount[0]?.total || 0
+      });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch stats", error: err.message });
+    }
+  }
+);
+
+// 🔹 HR: Get specific faculty dues
+router.get(
+  "/hr/faculty/:facultyId",
+  protect,
+  authorizeRoles("department_operator"),
+  authorizeDepartments("HR"),
+  async (req, res) => {
+    try {
+      const { facultyId } = req.params;
+      const Faculty = require("../models/Faculty");
+      const Due = require("../models/Due");
+
+      const faculty = await Faculty.findOne({ facultyId });
+      if (!faculty) {
+        return res.status(404).json({ message: "Faculty not found" });
+      }
+
+      const dues = await Due.find({
+        personId: facultyId,
+        personType: "Faculty"
+      }).sort({ dateAdded: -1 });
+
+      res.json({
+        _id: faculty._id,
+        personName: faculty.name,
+        personId: faculty.facultyId,
+        department: faculty.department?.name || "N/A",
+        dues
+      });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch faculty details", error: err.message });
+    }
+  }
+);
+
 module.exports = router;

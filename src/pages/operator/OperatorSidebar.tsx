@@ -21,7 +21,7 @@ const OperatorSidebar: React.FC = () => {
   }
 
   // Special departments that can view external dues and have restricted sidebar options
-  const specialDepartments = ["ACCOUNTS", "ACADEMICS"];
+  const specialDepartments = ["ACCOUNTS", "ACADEMICS", "HR"];
 
   return (
     <aside className="operator-sidebar">
@@ -62,14 +62,61 @@ const OperatorSidebar: React.FC = () => {
 
         {/* Render External Dept. Dues only for special departments */}
         {specialDepartments.includes(userDept) && (
-          <NavLink
-            to="/operator/other-dues"
-            className={({ isActive }) =>
-              isActive ? "sidebar-link active" : "sidebar-link"
-            }
-          >
-            <FaChartBar style={{ marginRight: "8px" }} /> All Dept. Dues
-          </NavLink>
+          <>
+            <NavLink
+              to="/operator/other-dues"
+              className={({ isActive }) =>
+                isActive ? "sidebar-link active" : "sidebar-link"
+              }
+            >
+              <FaChartBar style={{ marginRight: "8px" }} /> All Dept. Dues
+            </NavLink>
+
+            {/* Accounts-specific pages */}
+            {userDept === "ACCOUNTS" && (
+              <>
+                <NavLink
+                  to="/operator/accounts-student-dues"
+                  className={({ isActive }) =>
+                    isActive ? "sidebar-link active" : "sidebar-link"
+                  }
+                >
+                  📚 Student Dues
+                </NavLink>
+                <NavLink
+                  to="/operator/accounts-faculty-dues"
+                  className={({ isActive }) =>
+                    isActive ? "sidebar-link active" : "sidebar-link"
+                  }
+                >
+                  👨‍🏫 Faculty Dues
+                </NavLink>
+              </>
+            )}
+
+            {/* HR-specific pages */}
+            {userDept === "HR" && (
+              <>
+                <NavLink
+                  to="/operator/add-due"
+                  className={({ isActive }) =>
+                    isActive ? "sidebar-link active" : "sidebar-link"
+                  }
+                >
+                  <FaPlusCircle style={{ marginRight: "8px" }} /> Add Faculty
+                  Due
+                </NavLink>
+                <NavLink
+                  to="/operator/hr-faculty-dues"
+                  className={({ isActive }) =>
+                    isActive ? "sidebar-link active" : "sidebar-link"
+                  }
+                >
+                  👨‍🏫 View Faculty Dues
+                </NavLink>
+              </>
+            )}
+          </>
         )}
 
         {/* Change Password link for all operators */}

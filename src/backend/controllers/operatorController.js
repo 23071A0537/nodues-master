@@ -5,10 +5,25 @@ const Department = require("../models/Department");
 const mongoose = require("mongoose");  // make sure you also import your model
 const xlsx = require('xlsx');
 
+// Note: HR operators use the same addDue controller as other operators
+// but they are restricted to adding dues only for faculty (personType: "Faculty")
+// This is enforced at the frontend and the business logic ensures:
+// 1. HR can only see faculty in their dropdown
+// 2. HR cannot access /operator/students endpoint
+// 3. HR cannot access /operator/all (external dues)
+// 4. HR has dedicated /operator/hr/* endpoints for faculty management
+
 // ➕ Add dues for a student or faculty
 exports.addDue = async (req, res) => {
   try {
     const { personId, personType, department, description, amount, dueDate, category, link, dueType } = req.body;
+
+    // HR operators can only add faculty dues
+    if (req.user.department === "HR" && personType !== "Faculty") {
+      return res.status(403).json({ 
+        message: "HR operators can only add dues for faculty members" 
+      });
+    }
 
     // Validate dueType
     if (!dueType) {

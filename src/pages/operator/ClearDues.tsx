@@ -29,6 +29,7 @@ const ClearDue: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [statusFilter, setStatusFilter] = useState("all");
+  const [dueTypeFilter, setDueTypeFilter] = useState("all");
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalPendingAmount, setTotalPendingAmount] = useState(0);
 
@@ -39,7 +40,7 @@ const ClearDue: React.FC = () => {
 
   useEffect(() => {
     if (dues.length > 0) filterDues();
-  }, [dues, searchQuery, dateRange, statusFilter]);
+  }, [dues, searchQuery, dateRange, statusFilter, dueTypeFilter]);
 
   const fetchDues = async () => {
     setLoading(true);
@@ -132,6 +133,11 @@ const ClearDue: React.FC = () => {
       });
     }
 
+    // Due Type filter
+    if (dueTypeFilter !== "all") {
+      temp = temp.filter((d) => d.dueType === dueTypeFilter);
+    }
+
     setFilteredDues(temp);
     setTotalAmount(temp.reduce((sum, d) => sum + d.amount, 0));
   };
@@ -182,6 +188,23 @@ const ClearDue: React.FC = () => {
           <option value="cleared-at-accounts">Cleared at Accounts</option>
           <option value="payable">Dues with payment (Payable)</option>
           <option value="non-payable">Dues with payment (Non-payable)</option>
+        </select>
+
+        <select
+          className="clear-due-select"
+          value={dueTypeFilter}
+          onChange={(e) => setDueTypeFilter(e.target.value)}
+        >
+          <option value="all">All Due Types</option>
+          <option value="damage-to-property">Damage to College Property</option>
+          <option value="fee-delay">Fee Delay</option>
+          <option value="scholarship-issue">Scholarship Issue</option>
+          <option value="library-fine">Library Fine</option>
+          <option value="hostel-dues">Hostel Dues</option>
+          <option value="lab-equipment">Lab Equipment</option>
+          <option value="sports-equipment">Sports Equipment</option>
+          <option value="exam-malpractice">Exam Malpractice</option>
+          <option value="other">Other</option>
         </select>
       </div>
 

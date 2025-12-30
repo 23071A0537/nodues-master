@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Header from "./components/Header";
 import Layout from "./components/Layout";
 import { lazyLoad } from "./utils/lazyLoad";
 
@@ -25,14 +25,30 @@ const OperatorLayout = lazyLoad(
 const AccountsDashboard = lazyLoad(
   () => import("./pages/operator/AccountsDashboard")
 );
+const AccountsStudentDues = lazyLoad(
+  () => import("./pages/operator/AccountsStudentDues")
+);
 const AccountsStudentDetails = lazyLoad(
   () => import("./pages/operator/AccountsStudentDetails")
+);
+const AccountsFacultyDues = lazyLoad(
+  () => import("./pages/operator/AccountsFacultyDues")
+);
+const AccountsFacultyDetails = lazyLoad(
+  () => import("./pages/operator/AccountsFacultyDetails")
 );
 const AddDue = lazyLoad(() => import("./pages/operator/AddDue"));
 const ClearDue = lazyLoad(() => import("./pages/operator/ClearDues"));
 const OtherDeptDues = lazyLoad(() => import("./pages/operator/OtherDeptDues"));
 const ChangePassword = lazyLoad(
   () => import("./pages/operator/ChangePassword")
+);
+const HRFacultyDues = lazyLoad(() => import("./pages/operator/HRFacultyDues"));
+const HRFacultyDetails = lazyLoad(
+  () => import("./pages/operator/HRFacultyDetails")
+);
+const HRFacultyDashboard = lazyLoad(
+  () => import("./pages/operator/HRFacultyDashboard")
 );
 
 // HOD pages
@@ -42,6 +58,12 @@ const StudentDetails = lazyLoad(() => import("./pages/hod/StudentDetails"));
 const HODChangePassword = lazyLoad(
   () => import("./pages/hod/HODChangePassword")
 );
+
+// HR pages
+const HRDashboard = lazyLoad(() => import("./pages/hr/HRDashboard"));
+const HRLayout = lazyLoad(() => import("./pages/hr/HRLayout"));
+const AddFacultyDue = lazyLoad(() => import("./pages/hr/AddFacultyDue"));
+const HRChangePassword = lazyLoad(() => import("./pages/hr/HRChangePassword"));
 
 // Utility: get role from session
 function getRole() {
@@ -89,6 +111,15 @@ const HODRoute = ({ children }: { children: JSX.Element }) => {
   return children;
 };
 
+// HRRoute → allows only HR
+const HRRoute = ({ children }: { children: JSX.Element }) => {
+  const token = sessionStorage.getItem("token");
+  const role = getRole();
+  if (!token) return <Navigate to="/login" replace />;
+  if (role !== "hr") return <Navigate to="/" replace />;
+  return children;
+};
+
 // New component to handle role-based redirects
 const RoleBasedRedirect = () => {
   const role = getRole();
@@ -107,6 +138,10 @@ const RoleBasedRedirect = () => {
 
   if (role === "hod") {
     return <Navigate to="/hod" replace />;
+  }
+
+  if (role === "hr") {
+    return <Navigate to="/hr" replace />;
   }
 
   return <Navigate to="/login" replace />;
@@ -173,13 +208,35 @@ function App() {
                 element={<AccountsDashboard />}
               />
               <Route
+                path="accounts-student-dues"
+                element={<AccountsStudentDues />}
+              />
+              <Route
                 path="student/:rollNumber"
                 element={<AccountsStudentDetails />}
+              />
+              <Route
+                path="accounts-faculty-dues"
+                element={<AccountsFacultyDues />}
+              />
+              <Route
+                path="faculty/:facultyId"
+                element={<AccountsFacultyDetails />}
               />
               <Route path="add-due" element={<AddDue />} />
               <Route path="other-dues" element={<OtherDeptDues />} />
               <Route path="clear-dues" element={<ClearDue />} />
               <Route path="change-password" element={<ChangePassword />} />
+              {/* HR operator routes */}
+              <Route
+                path="hr-faculty-dashboard"
+                element={<HRFacultyDashboard />}
+              />
+              <Route path="hr-faculty-dues" element={<HRFacultyDues />} />
+              <Route
+                path="hr-faculty/:facultyId"
+                element={<HRFacultyDetails />}
+              />
             </Route>
 
             {/* HOD routes */}
@@ -194,6 +251,20 @@ function App() {
               <Route index element={<HODDashboard />} />
               <Route path="student/:rollNumber" element={<StudentDetails />} />
               <Route path="change-password" element={<HODChangePassword />} />
+            </Route>
+
+            {/* HR routes */}
+            <Route
+              path="/hr"
+              element={
+                <HRRoute>
+                  <HRLayout />
+                </HRRoute>
+              }
+            >
+              <Route index element={<HRDashboard />} />
+              <Route path="add-faculty-due" element={<AddFacultyDue />} />
+              <Route path="change-password" element={<HRChangePassword />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/login" replace />} />

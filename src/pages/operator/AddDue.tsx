@@ -2,7 +2,7 @@ import React, { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import * as XLSX from "xlsx";
-import api from "../../api"; // Axios instance
+import api from "../../api";
 import "./AddDue.css";
 
 interface Person {
@@ -15,9 +15,8 @@ interface Person {
 
 const AddDue: React.FC = () => {
   const navigate = useNavigate();
-  const [personType, setPersonType] = useState<"student" | "faculty">(
-    "student"
-  );
+  const [operatorDept, setOperatorDept] = useState("");
+  const [personType, setPersonType] = useState<"faculty">("faculty");
   const [persons, setPersons] = useState<Person[]>([]);
   const [selectedPersonId, setSelectedPersonId] = useState("");
   const [description, setDescription] = useState("");
@@ -41,37 +40,33 @@ const AddDue: React.FC = () => {
   const [uploadError, setUploadError] = useState("");
   const [uploadResult, setUploadResult] = useState<string | null>(null);
 
-  const typeToEndpoint = { student: "students", faculty: "faculty" };
-
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       const user = JSON.parse(storedUser);
       setDepartment(user.department || "");
+      setOperatorDept(user.department || "");
     }
     fetchPersons();
-  }, [personType]);
+  }, []);
 
   const fetchPersons = async () => {
     try {
-      const res = await api.get(`/operator/${typeToEndpoint[personType]}`);
+      // HR operators only fetch faculty
+      const res = await api.get(`/operator/faculty`);
       setPersons(res.data);
       if (res.data.length > 0) {
-        setSelectedPersonId(
-          personType === "student"
-            ? res.data[0].rollNumber
-            : res.data[0].facultyId
-        );
+        setSelectedPersonId(res.data[0].facultyId);
       }
     } catch (err) {
-      console.error("Failed to fetch persons", err);
+      console.error("Failed to fetch faculty", err);
       setPersons([]);
     }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setShowConfirmPopup(true); // Show confirmation popup
+    setShowConfirmPopup(true);
   };
 
   const confirmAddDue = async () => {
@@ -80,17 +75,15 @@ const AddDue: React.FC = () => {
     setError("");
     setSuccess("");
 
-    const selectedPerson = persons.find((p) =>
-      personType === "student"
-        ? p.rollNumber === selectedPersonId
-        : p.facultyId === selectedPersonId
+    const selectedPerson = persons.find(
+      (p) => p.facultyId === selectedPersonId
     );
 
     try {
       const res = await api.post("operator/add-due", {
         personId: selectedPersonId,
         personName: selectedPerson?.name,
-        personType: personType === "student" ? "Student" : "Faculty",
+        personType: "Faculty",
         department,
         description,
         amount,
@@ -167,7 +160,7 @@ const AddDue: React.FC = () => {
         return {
           personId: row.personId,
           personName: row.personName,
-          personType: row.personType,
+          personType: "Faculty",
           department: row.department || department,
           description: row.description,
           amount: Number(row.amount),
@@ -244,67 +237,60 @@ const AddDue: React.FC = () => {
         <div className="col-lg-8">
           <div className="card shadow-lg border-0 rounded-4">
             <div className="card-body p-5">
-              <h2 className="text-center mb-4 add-due-title">Add Due</h2>
+              <h2 className="text-center mb-4 add-due-title">
+                {operatorDept === "HR" ? "➕ Add Faculty Due" : "Add Due"}
+              </h2>
+
+              {/* HR Operator Info */}
+              {operatorDept === "HR" && (
+                <div
+                  style={{
+                    padding: "16px",
+                    backgroundColor: "#f0f9ff",
+                    border: "1px solid #bae6fd",
+                    borderRadius: "8px",
+                    marginBottom: "24px",
+                    fontSize: "14px",
+                    color: "#0c4a6e",
+                  }}
+                >
+                  <p style={{ margin: "0 0 8px 0", fontWeight: "600" }}>
+                    ℹ️ HR Faculty Dues Management
+                  </p>
+                  <p style={{ margin: "4px 0 0 0" }}>
+                    You can add and manage dues for all faculty members across
+                    the institution. Use this to track salary deductions,
+                    equipment loss, property damage, and other faculty-related
+                    financial matters.
+                  </p>
+                </div>
+              )}
 
               {/* --- Single Due Form --- */}
               <form onSubmit={handleSubmit} className="add-due-form">
-                {/* Person Type & Select Person */}
+                {/* Faculty Selection */}
                 <div className="form-row">
                   <div className="form-col">
-                    <label className="form-label">Person Type</label>
-                    <select
-                      className="form-select"
-                      value={personType}
-                      onChange={(e) =>
-                        setPersonType(e.target.value as "student" | "faculty")
-                      }
-                    >
-                      <option value="student">Student</option>
-                      <option value="faculty">Faculty</option>
-                    </select>
-                  </div>
-                  <div className="form-col">
                     <label className="form-label">
-                      Select {personType === "student" ? "Student" : "Faculty"}
+                      👨‍🏫 Select Faculty Member
                     </label>
                     <Select
                       options={persons.map((p) => ({
-                        value:
-                          personType === "student"
-                            ? p.rollNumber!
-                            : p.facultyId,
-                        label: `${p.name} ${
-                          personType === "student"
-                            ? `(${p.rollNumber})`
-                            : `(${p.facultyId})`
-                        }`,
+                        value: p.facultyId,
+                        label: `${p.name} (${p.facultyId})`,
                       }))}
                       value={
                         selectedPersonId
                           ? {
                               value: selectedPersonId,
-                              label: persons.find((p) =>
-                                personType === "student"
-                                  ? p.rollNumber === selectedPersonId
-                                  : p.facultyId === selectedPersonId
+                              label: persons.find(
+                                (p) => p.facultyId === selectedPersonId
                               )
                                 ? `${
-                                    persons.find((p) =>
-                                      personType === "student"
-                                        ? p.rollNumber === selectedPersonId
-                                        : p.facultyId === selectedPersonId
+                                    persons.find(
+                                      (p) => p.facultyId === selectedPersonId
                                     )?.name
-                                  } (${
-                                    personType === "student"
-                                      ? persons.find(
-                                          (p) =>
-                                            p.rollNumber === selectedPersonId
-                                        )?.rollNumber
-                                      : persons.find(
-                                          (p) =>
-                                            p.facultyId === selectedPersonId
-                                        )?.facultyId
-                                  })`
+                                  } (${selectedPersonId})`
                                 : "",
                             }
                           : null
@@ -313,6 +299,7 @@ const AddDue: React.FC = () => {
                         setSelectedPersonId(selectedOption?.value || "")
                       }
                       isSearchable
+                      placeholder="Search faculty by name or ID..."
                     />
                   </div>
                 </div>
@@ -320,23 +307,25 @@ const AddDue: React.FC = () => {
                 {/* Description & Amount */}
                 <div className="form-row">
                   <div className="form-col">
-                    <label className="form-label">Description</label>
+                    <label className="form-label">📝 Description</label>
                     <input
                       type="text"
                       className="form-control"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
+                      placeholder="e.g., Salary Deduction, Equipment Loss, Property Damage"
                       required
                     />
                   </div>
                   <div className="form-col">
-                    <label className="form-label">Amount</label>
+                    <label className="form-label">💰 Amount</label>
                     <input
                       type="number"
                       min={0}
                       className="form-control"
                       value={amount}
                       onChange={(e) => setAmount(Number(e.target.value))}
+                      placeholder="Enter amount in rupees"
                       required
                     />
                   </div>
@@ -345,7 +334,7 @@ const AddDue: React.FC = () => {
                 {/* Due Date */}
                 <div className="form-row">
                   <div className="form-col">
-                    <label className="form-label">Due Date</label>
+                    <label className="form-label">📅 Due Date</label>
                     <input
                       type="date"
                       className="form-control"
@@ -359,7 +348,7 @@ const AddDue: React.FC = () => {
                 {/* Category */}
                 <div className="form-row">
                   <div className="form-col">
-                    <label className="form-label">Category</label>
+                    <label className="form-label">📌 Category</label>
                     <select
                       className="form-select"
                       value={category}
@@ -368,20 +357,20 @@ const AddDue: React.FC = () => {
                       }
                     >
                       <option value="payable">
-                        Payable (Student has to pay money)
+                        💳 Payable (Faculty has to pay money)
                       </option>
                       <option value="non-payable">
-                        Non-Payable (No money required)
+                        ✓ Non-Payable (No money required)
                       </option>
                     </select>
                   </div>
                 </div>
 
-                {/* Due Type - NEW FIELD */}
+                {/* Due Type */}
                 <div className="form-row">
                   <div className="form-col">
                     <label className="form-label">
-                      Due Type <span style={{ color: "#dc2626" }}>*</span>
+                      🏷️ Due Type <span style={{ color: "#dc2626" }}>*</span>
                     </label>
                     <select
                       className="form-select"
@@ -398,15 +387,11 @@ const AddDue: React.FC = () => {
                       <option value="damage-to-property">
                         Damage to College Property
                       </option>
-                      <option value="fee-delay">Fee Delay</option>
-                      <option value="scholarship-issue">
-                        Scholarship Issue
-                      </option>
+                      <option value="equipment-loss">Equipment Loss</option>
+                      <option value="salary-deduction">Salary Deduction</option>
                       <option value="library-fine">Library Fine</option>
-                      <option value="hostel-dues">Hostel Dues</option>
                       <option value="lab-equipment">Lab Equipment</option>
-                      <option value="sports-equipment">Sports Equipment</option>
-                      <option value="exam-malpractice">Exam Malpractice</option>
+                      <option value="research-cost">Research Cost</option>
                       <option value="other">Other</option>
                     </select>
                   </div>
@@ -416,7 +401,7 @@ const AddDue: React.FC = () => {
                 <div className="form-row">
                   <div className="form-col">
                     <label className="form-label">
-                      Google Drive Link (Optional)
+                      🔗 Google Drive Link (Optional)
                     </label>
                     <input
                       type="url"
@@ -451,7 +436,7 @@ const AddDue: React.FC = () => {
                   disabled={loading}
                   className="btn btn-primary w-100 py-2 add-due-btn"
                 >
-                  {loading ? "Adding Due..." : "Add Due"}
+                  {loading ? "Adding Due..." : "✅ Add Faculty Due"}
                 </button>
 
                 {/* Confirmation Popup */}
@@ -464,8 +449,8 @@ const AddDue: React.FC = () => {
                       className="modal-content"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <h5>Confirm Add Due</h5>
-                      <p>Are you sure you want to add this due?</p>
+                      <h5>Confirm Add Faculty Due</h5>
+                      <p>Are you sure you want to add this faculty due?</p>
                       <div className="modal-buttons">
                         <button
                           className="btn btn-secondary"
@@ -487,7 +472,7 @@ const AddDue: React.FC = () => {
 
               <hr className="my-4" />
 
-              {/* --- Bulk Upload Section with Template Download --- */}
+              {/* Bulk Upload Section */}
               <div className="bulk-upload-section">
                 <div
                   style={{
@@ -497,7 +482,7 @@ const AddDue: React.FC = () => {
                     marginBottom: "16px",
                   }}
                 >
-                  <h5 className="mb-0">Bulk Upload via Excel</h5>
+                  <h5 className="mb-0">📊 Bulk Upload Faculty Dues</h5>
                   <button
                     type="button"
                     className="btn btn-info btn-sm"
@@ -514,7 +499,6 @@ const AddDue: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Help text */}
                 <div
                   style={{
                     padding: "12px",
@@ -542,17 +526,16 @@ const AddDue: React.FC = () => {
                     }}
                   >
                     <li>
-                      Required columns: personId, personName, personType,
-                      department, description, amount, dueDate
+                      Required columns: personId, personName, department,
+                      description, amount, dueDate, dueType
                     </li>
                     <li>
-                      Optional columns: category (payable/non-payable), link
-                      (Google Drive URL)
+                      Optional: category (payable/non-payable), link (Google
+                      Drive URL)
                     </li>
                     <li>Date format: YYYY-MM-DD (e.g., 2025-12-31)</li>
-                    <li>personType must be either "Student" or "Faculty"</li>
                     <li>
-                      Not sure about the format? Click "Download Template" above
+                      Click "Download Template" to see the exact format needed
                     </li>
                   </ul>
                 </div>
@@ -569,7 +552,7 @@ const AddDue: React.FC = () => {
                   className="btn btn-success w-100 py-2"
                   onClick={handleBulkUpload}
                 >
-                  {loading ? "Uploading..." : "Upload Bulk Dues"}
+                  {loading ? "Uploading..." : "📤 Upload Bulk Faculty Dues"}
                 </button>
               </div>
             </div>
